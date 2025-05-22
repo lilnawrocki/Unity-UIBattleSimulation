@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Image), typeof(Button))]
 public class Selectable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private Image image;
@@ -13,8 +14,8 @@ public class Selectable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         image = GetComponent<Image>();
         button = GetComponent<Button>();
 
-        defaultColor = image.color;
-        pressedColor = button.colors.pressedColor;
+        if (image) defaultColor = image.color;
+        if (button) pressedColor = button.colors.pressedColor;
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -26,6 +27,5 @@ public class Selectable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         image.color = defaultColor;
     }
 
-    
 
 }

@@ -53,6 +53,22 @@ public abstract class Character
         currentMP = value;
     }
 
+    public int GetCurrentHP()
+    {
+        return currentHP;
+    }
+
+    public int GetCurrentMP()
+    {
+        return currentMP;
+    }
+    public void LevelUp()
+    {
+        level++;
+        maxHP = CalculateMaxHP(level, characterType);
+        maxMP = CalculateMaxMP(level, characterType);
+        
+    }
     public CharacterType GetCharacterType()
     {
         return characterType;
