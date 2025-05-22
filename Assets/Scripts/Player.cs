@@ -67,7 +67,6 @@ public class Player : Character
         }
         return maxMP;
     }
-
     public override int ExpToNextLevel()
     {
         throw new System.NotImplementedException();
