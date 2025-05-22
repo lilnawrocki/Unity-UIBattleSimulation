@@ -82,7 +82,11 @@ public class GameManager : MonoBehaviour
         if (characterDetails.MAXHPTMP) characterDetails.MAXHPTMP.text = character.GetMaxHP().ToString();
         if (characterDetails.MPTMP) characterDetails.MPTMP.text = character.GetCurrentMP().ToString();
         if (characterDetails.MAXMPTMP) characterDetails.MAXMPTMP.text = character.GetMaxMP().ToString();
-        if (characterDetails.Avatar) characterDetails.Avatar.sprite = CurrentSelected?.GetComponent<Image>().sprite;
+        if (characterDetails.Avatar)
+        {
+            if (characterDetails.Avatar.sprite == null)
+                characterDetails.Avatar.sprite = CurrentSelected?.GetComponent<Image>().sprite;
+        }
         characterDetails.characterType = character.GetCharacterType();
     }
     public void LevelUp(Character character)
