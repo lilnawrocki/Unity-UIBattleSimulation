@@ -1,7 +1,7 @@
 public enum CharacterType
 {
     SWORDSMAN = 0,
-    MAGICIAN = 1,
+    MAGE = 1,
     BACKEND_ENGINEER = 2,
     PINK_BEAN = 3,
     HORNY_MUSHROOM = 4,

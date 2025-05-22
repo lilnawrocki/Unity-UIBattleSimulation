@@ -1,24 +1,60 @@
 public abstract class Character
 {
     protected string name;
-    protected int hp;
-    protected int mp;
+    protected int currentHP;
+    protected int maxHP;
+    protected int currentMP;
+    protected int maxMP;
     protected int level;
     protected int currentExp = 0;
     protected int expToNextLevel;
 
     protected CharacterType characterType;
 
-    public Character(string name, int hp, int mp, int level, CharacterType characterType)
+    public Character(int level, CharacterType characterType)
     {
-        this.name = name;
-        this.hp = hp;
-        this.mp = mp;
         this.level = level;
         this.characterType = characterType;
     }
 
     public abstract int ExpToNextLevel();
     public abstract void ApplyDamage();
-    
+
+    public abstract int CalculateMaxHP(int level, CharacterType characterType);
+    public abstract int CalculateMaxMP(int level, CharacterType characterType);
+
+    public int GetMaxHP()
+    {
+        return maxHP;
+    }
+
+    public int GetMaxMP()
+    {
+        return maxMP;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public string GetName()
+    {
+        return name;
+    }
+
+    public void SetCurrentHP(int value)
+    {
+        currentHP = value;
+    }
+
+    public void SetCurrentMP(int value)
+    {
+        currentMP = value;
+    }
+
+    public CharacterType GetCharacterType()
+    {
+        return characterType;
+    }
 }
