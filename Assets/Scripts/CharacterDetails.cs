@@ -9,13 +9,10 @@ public class CharacterDetails : MonoBehaviour
     public Image Avatar;
     public Button LevelUpButton;
     public CharacterType characterType;
-
-    int siblingIndex;
     Button button;
 
     void Awake()
     {
-        siblingIndex = transform.GetSiblingIndex();
         button = GetComponent<Button>();
     }
 
@@ -25,9 +22,15 @@ public class CharacterDetails : MonoBehaviour
         {
             if (GameManager.GM)
             {
-                GameManager.GM.DeleteCharacter(transform.GetSiblingIndex());
-                GameManager.GM.SelectedSelectable.ElementAt(transform.GetSiblingIndex()).interactable = true;
-                GameManager.GM.SelectedSelectable.RemoveAt(transform.GetSiblingIndex());
+                //GameManager.GM.DeleteCharacter(transform.GetSiblingIndex());
+                GameManager.GM.DeleteCharacter(characterType);
+                Button selectedButton = GameManager.GM.GetButton(GameManager.GM.SelectedSelectable, characterType);
+                if (selectedButton == null) return;
+                selectedButton.interactable = true;
+                //GameManager.GM.SelectedSelectable.ElementAt(transform.GetSiblingIndex()).interactable = true;
+                //GameManager.GM.AddToNotSelectedSelectable(selectedButton);
+                //GameManager.GM.SelectedSelectable.RemoveAt(transform.GetSiblingIndex());
+                GameManager.GM.RemoveFromSelectedSelectable(characterType);
             }
             Destroy(gameObject);
         });
@@ -35,8 +38,8 @@ public class CharacterDetails : MonoBehaviour
         {
             if (GameManager.GM)
             {
-                GameManager.GM.LevelUp(GameManager.GM.Characters.ElementAt(transform.GetSiblingIndex()));
-                GameManager.GM.FillCharacterDetails(this);
+                GameManager.GM.LevelUp(GameManager.GM.GetCharacter(characterType));
+                GameManager.GM.FillCharacterDetails(this, characterType);
             }
         });
     }
@@ -44,10 +47,5 @@ public class CharacterDetails : MonoBehaviour
     public int GetSiblingIndex()
     {
         return transform.GetSiblingIndex();
-    }
-
-    public int GetStaticSiblingIndex()
-    {
-        return siblingIndex;
     }
 }

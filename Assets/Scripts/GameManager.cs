@@ -4,36 +4,28 @@ using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Unity.VisualScripting;
+using JetBrains.Annotations;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager GM;
+    public static GameManager GM = null;
     public GameObject CurrentSelected = null;
     public GameObject CharacterDetailsPanelPrefab = null;
+    public GameObject AvailableCharactersPartyPanel = null;
+    public GameObject AvailableCharactersOpponentsPanel = null;
     public Transform SelectedPartyParent = null;
 
-    public List<Character> Characters = new List<Character>();
+    public List<Character> AllCharacters = new List<Character>();
+    public List<Character> PartyCharacters = new List<Character>();
+    public List<Character> OpponentCharacters = new List<Character>();
+    public List<Character> SelectedOpponentsCharacters = new List<Character>();
     public List<Button> SelectedSelectable = new List<Button>();
+    //public List<Button> NotSelectedSelectable = new List<Button>();
     void Awake()
     {
         GM = this;
-    }
-
-    void Start()
-    {
-        // Player swordsman = new Player(50, CharacterType.SWORDSMAN);
-        // Player mage = new Player(50, CharacterType.MAGE);
-        // Player backendEngineer = new Player(50, CharacterType.BACKEND_ENGINEER);
-
-        // // Enemy pinkBean = new Enemy(1, CharacterType.PINK_BEAN);
-        // // Enemy hornyMushroom = new Enemy(1, CharacterType.HORNY_MUSHROOM);
-        // // Enemy slime = new Enemy(1, CharacterType.SLIME);
-
-        // Character[] characters = { swordsman, mage, backendEngineer };
-
-        // Debug.Log($"Swordsman stats: HP: {characters[0].GetMaxHP()} MP: {characters[0].GetMaxMP()}");
-        // Debug.Log($"Mage stats: HP: {characters[1].GetMaxHP()} MP: {characters[1].GetMaxMP()}");
-        // Debug.Log($"Backend stats: HP: {characters[2].GetMaxHP()} MP: {characters[2].GetMaxMP()}");
+        //NotSelectedSelectable.AddRange(AvailableCharactersPartyPanel.GetComponentsInChildren<Button>());
     }
     public void GetSelectedButton()
     {
@@ -53,35 +45,51 @@ public class GameManager : MonoBehaviour
         {
             character = new Enemy(1, characterType);
         }
-        AddCharacter(character);
+        AllCharacters.Add(character);
         return character;
     }
-
-
-    public void InstantiateCharacterPanel(CharacterType characterType)
+    public Character CreateCharacter(CharacterType characterType, List<Character> characterList)
+    {
+        Character character;
+        if (characterType == CharacterType.SWORDSMAN ||
+        characterType == CharacterType.MAGE ||
+        characterType == CharacterType.BACKEND_ENGINEER)
+        {
+            character = new Player(1, characterType);
+        }
+        else
+        {
+            character = new Enemy(1, characterType);
+        }
+        characterList.Add(character);
+        return character;
+    }
+    public void InstantiateCharacterPanel(CharacterType characterType, GameObject panelPrefab, Transform parent)
     {
         GameObject characterDetailsPanelObject;
-        if (CharacterDetailsPanelPrefab && SelectedPartyParent)
+        if (panelPrefab && parent)
         {
-            if (SelectedPartyParent.childCount < 3)
+            if (parent.childCount < 3)
             {
-                characterDetailsPanelObject = Instantiate(CharacterDetailsPanelPrefab, SelectedPartyParent);
+                characterDetailsPanelObject = Instantiate(panelPrefab, parent);
                 CharacterDetails characterDetails = characterDetailsPanelObject.GetComponent<CharacterDetails>();
-                FillCharacterDetails(characterDetails);
+                FillCharacterDetails(characterDetails, characterType);
             }
 
         }
     }
 
-    public void FillCharacterDetails(CharacterDetails characterDetails)
+    public void FillCharacterDetails(CharacterDetails characterDetails, CharacterType characterType)
     {
-        Character character = Characters.ElementAt(characterDetails.GetSiblingIndex());
-        if (characterDetails.ClassNameTMP) characterDetails.ClassNameTMP.text = character.GetName();
-        if (characterDetails.LevelTMP) characterDetails.LevelTMP.text = character.GetLevel().ToString();
-        if (characterDetails.HPTMP) characterDetails.HPTMP.text = character.GetCurrentHP().ToString();
-        if (characterDetails.MAXHPTMP) characterDetails.MAXHPTMP.text = character.GetMaxHP().ToString();
-        if (characterDetails.MPTMP) characterDetails.MPTMP.text = character.GetCurrentMP().ToString();
-        if (characterDetails.MAXMPTMP) characterDetails.MAXMPTMP.text = character.GetMaxMP().ToString();
+        //Character character = AllCharacters.ElementAt(characterDetails.GetSiblingIndex());
+        Character character = GetCharacter(characterType);
+        if (character == null) return;
+        if (characterDetails.ClassNameTMP) characterDetails.ClassNameTMP.text = character?.GetName();
+        if (characterDetails.LevelTMP) characterDetails.LevelTMP.text = character?.GetLevel().ToString();
+        if (characterDetails.HPTMP) characterDetails.HPTMP.text = character?.GetCurrentHP().ToString();
+        if (characterDetails.MAXHPTMP) characterDetails.MAXHPTMP.text = character?.GetMaxHP().ToString();
+        if (characterDetails.MPTMP) characterDetails.MPTMP.text = character?.GetCurrentMP().ToString();
+        if (characterDetails.MAXMPTMP) characterDetails.MAXMPTMP.text = character?.GetMaxMP().ToString();
         if (characterDetails.Avatar)
         {
             if (characterDetails.Avatar.sprite == null)
@@ -93,12 +101,72 @@ public class GameManager : MonoBehaviour
     {
         character.LevelUp();
     }
-    public void AddCharacter(Character character)
+    public Character GetCharacter(CharacterType characterType)
     {
-        Characters.Add(character);
+        foreach (Character character in AllCharacters)
+        {
+            if (character.GetCharacterType() == characterType)
+            {
+                return character;
+            }
+        }
+
+        return null;
+    }
+    public Button GetButton(List<Button> buttonList, CharacterType characterType)
+    {
+        for (int i = 0; i < buttonList.Count; i++)
+        {
+            if (buttonList.ElementAt(i).GetComponent<SelectableCharacter>().characterType == characterType)
+            {
+                return buttonList.ElementAt(i);
+            }
+        }
+        return null;
     }
     public void DeleteCharacter(int index)
     {
-        Characters.RemoveAt(index);
+        AllCharacters.RemoveAt(index);
     }
+    public void DeleteCharacter(CharacterType characterType)
+    {
+        for (int i = 0; i < AllCharacters.Count; i++)
+        {
+            if (AllCharacters.ElementAt(i).GetCharacterType() == characterType)
+            {
+                AllCharacters.RemoveAt(i);
+            }
+        }
+    }
+    public void RemoveFromSelectedSelectable(CharacterType characterType)
+    {
+        for (int i = 0; i < SelectedSelectable.Count; i++)
+        {
+            if (SelectedSelectable.ElementAt(i).GetComponent<SelectableCharacter>().characterType == characterType)
+            {
+                SelectedSelectable.RemoveAt(i);
+            }
+        }
+    }
+    /*
+    public void AddToNotSelectedSelectable(Button button)
+    {
+        if (!NotSelectedSelectable.Contains(button))
+            NotSelectedSelectable.Add(button);
+    }
+    /*
+/*
+    public void RemoveFromNotSelectedSelectable(Button button)
+    {
+
+        for (int i = 0; i < NotSelectedSelectable.Count; i++)
+        {
+            if (NotSelectedSelectable.ElementAt(i) == button)
+            {
+                NotSelectedSelectable.RemoveAt(i);
+            }
+        }
+    }
+    */
+    
 }
