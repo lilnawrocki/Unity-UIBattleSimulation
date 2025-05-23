@@ -22,14 +22,10 @@ public class CharacterDetails : MonoBehaviour
         {
             if (GameManager.GM)
             {
-                //GameManager.GM.DeleteCharacter(transform.GetSiblingIndex());
                 GameManager.GM.DeleteCharacter(characterType);
                 Button selectedButton = GameManager.GM.GetButton(GameManager.GM.SelectedSelectable, characterType);
                 if (selectedButton == null) return;
                 selectedButton.interactable = true;
-                //GameManager.GM.SelectedSelectable.ElementAt(transform.GetSiblingIndex()).interactable = true;
-                //GameManager.GM.AddToNotSelectedSelectable(selectedButton);
-                //GameManager.GM.SelectedSelectable.RemoveAt(transform.GetSiblingIndex());
                 GameManager.GM.RemoveFromSelectedSelectable(characterType);
             }
             Destroy(gameObject);

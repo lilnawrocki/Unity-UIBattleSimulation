@@ -64,10 +64,12 @@ public abstract class Character
     }
     public void LevelUp()
     {
-        level++;
-        maxHP = CalculateMaxHP(level, characterType);
-        maxMP = CalculateMaxMP(level, characterType);
-        
+        if (level < 99)
+        {
+            level++;
+            maxHP = CalculateMaxHP(level, characterType);
+            maxMP = CalculateMaxMP(level, characterType);
+        } 
     }
     public CharacterType GetCharacterType()
     {

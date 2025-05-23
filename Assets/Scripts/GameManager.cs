@@ -21,11 +21,9 @@ public class GameManager : MonoBehaviour
     public List<Character> OpponentCharacters = new List<Character>();
     public List<Character> SelectedOpponentsCharacters = new List<Character>();
     public List<Button> SelectedSelectable = new List<Button>();
-    //public List<Button> NotSelectedSelectable = new List<Button>();
     void Awake()
     {
         GM = this;
-        //NotSelectedSelectable.AddRange(AvailableCharactersPartyPanel.GetComponentsInChildren<Button>());
     }
     public void GetSelectedButton()
     {
@@ -81,7 +79,6 @@ public class GameManager : MonoBehaviour
 
     public void FillCharacterDetails(CharacterDetails characterDetails, CharacterType characterType)
     {
-        //Character character = AllCharacters.ElementAt(characterDetails.GetSiblingIndex());
         Character character = GetCharacter(characterType);
         if (character == null) return;
         if (characterDetails.ClassNameTMP) characterDetails.ClassNameTMP.text = character?.GetName();
@@ -147,26 +144,5 @@ public class GameManager : MonoBehaviour
                 SelectedSelectable.RemoveAt(i);
             }
         }
-    }
-    /*
-    public void AddToNotSelectedSelectable(Button button)
-    {
-        if (!NotSelectedSelectable.Contains(button))
-            NotSelectedSelectable.Add(button);
-    }
-    /*
-/*
-    public void RemoveFromNotSelectedSelectable(Button button)
-    {
-
-        for (int i = 0; i < NotSelectedSelectable.Count; i++)
-        {
-            if (NotSelectedSelectable.ElementAt(i) == button)
-            {
-                NotSelectedSelectable.RemoveAt(i);
-            }
-        }
-    }
-    */
-    
+    }    
 }

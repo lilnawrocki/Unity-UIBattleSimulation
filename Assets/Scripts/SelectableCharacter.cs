@@ -8,8 +8,6 @@ public class SelectableCharacter : MonoBehaviour
     public CharacterType characterType;
     public Transform parent;
     Button button;
-    bool capacityReached = false;
-
     void Awake()
     {
         button = GetComponent<Button>();
@@ -26,7 +24,6 @@ public class SelectableCharacter : MonoBehaviour
                 GameManager.GM.CreateCharacter(characterType);
                 GameManager.GM.InstantiateCharacterPanel(characterType, GameManager.GM.CharacterDetailsPanelPrefab, parent);
                 GameManager.GM.SelectedSelectable.Add(button);
-                //GameManager.GM.RemoveFromNotSelectedSelectable(button);
                 if (button) button.interactable = false;
             }
         });
