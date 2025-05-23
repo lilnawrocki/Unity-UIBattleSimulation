@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
-using Unity.VisualScripting;
-using JetBrains.Annotations;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager GM = null;
+    public State CurrentState = 0;
     public GameObject CurrentSelected = null;
     public GameObject CharacterDetailsPanelPrefab = null;
     public GameObject AvailableCharactersPartyPanel = null;
@@ -19,7 +17,6 @@ public class GameManager : MonoBehaviour
     public List<Character> AllCharacters = new List<Character>();
     public List<Character> PartyCharacters = new List<Character>();
     public List<Character> OpponentCharacters = new List<Character>();
-    public List<Character> SelectedOpponentsCharacters = new List<Character>();
     public List<Button> SelectedSelectable = new List<Button>();
     void Awake()
     {
@@ -135,6 +132,26 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public void AddCharacterFromAll(CharacterType characterType, List<Character> characters)
+    {
+        foreach (Character character in AllCharacters)
+        {
+            if (character.GetCharacterType() == characterType)
+            {
+                characters.Add(character);
+            }
+        }
+    }
+    public void DeleteCharacter(CharacterType characterType, List<Character> characters)
+    {
+        for (int i = 0; i < characters.Count; i++)
+        {
+            if (characters.ElementAt(i).GetCharacterType() == characterType)
+            {
+                characters.RemoveAt(i);
+            }
+        }
+    }
     public void RemoveFromSelectedSelectable(CharacterType characterType)
     {
         for (int i = 0; i < SelectedSelectable.Count; i++)
@@ -144,5 +161,9 @@ public class GameManager : MonoBehaviour
                 SelectedSelectable.RemoveAt(i);
             }
         }
-    }    
+    }
+    public void SetState(int state)
+    {
+        CurrentState = (State)state;
+    }
 }

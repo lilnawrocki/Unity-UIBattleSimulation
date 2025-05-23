@@ -20,14 +20,19 @@ public class CharacterDetails : MonoBehaviour
     {
         button?.onClick.AddListener(delegate
         {
-            if (GameManager.GM)
-            {
-                GameManager.GM.DeleteCharacter(characterType);
-                Button selectedButton = GameManager.GM.GetButton(GameManager.GM.SelectedSelectable, characterType);
-                if (selectedButton == null) return;
-                selectedButton.interactable = true;
-                GameManager.GM.RemoveFromSelectedSelectable(characterType);
-            }
+            if (!GameManager.GM) return;
+            
+            GameManager.GM.DeleteCharacter(characterType);
+            Button selectedButton = GameManager.GM.GetButton(GameManager.GM.SelectedSelectable, characterType);
+            if (selectedButton == null) return;
+            selectedButton.interactable = true;
+            GameManager.GM.RemoveFromSelectedSelectable(characterType);
+
+            if (GameManager.GM.CurrentState == State.GROUP_SELECTION)
+                GameManager.GM.DeleteCharacter(characterType, GameManager.GM.PartyCharacters);
+            if (GameManager.GM.CurrentState == State.OPPONENT_SELECTION)
+                GameManager.GM.DeleteCharacter(characterType, GameManager.GM.OpponentCharacters);
+            
             Destroy(gameObject);
         });
         LevelUpButton?.onClick.AddListener(delegate

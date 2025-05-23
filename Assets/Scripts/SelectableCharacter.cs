@@ -25,6 +25,10 @@ public class SelectableCharacter : MonoBehaviour
                 GameManager.GM.InstantiateCharacterPanel(characterType, GameManager.GM.CharacterDetailsPanelPrefab, parent);
                 GameManager.GM.SelectedSelectable.Add(button);
                 if (button) button.interactable = false;
+                if (GameManager.GM.CurrentState == State.GROUP_SELECTION)
+                    GameManager.GM.AddCharacterFromAll(characterType, GameManager.GM.PartyCharacters);
+                if (GameManager.GM.CurrentState == State.OPPONENT_SELECTION)
+                    GameManager.GM.AddCharacterFromAll(characterType, GameManager.GM.OpponentCharacters);
             }
         });
     }
