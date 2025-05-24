@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     public List<Character> AllCharacters = new List<Character>();
     public List<Character> PartyCharacters = new List<Character>();
     public List<Character> OpponentCharacters = new List<Character>();
-    public List<SelectableCharacter> SelectedSelectable = new List<SelectableCharacter>();
     void Awake()
     {
         GM = this;
@@ -110,8 +109,6 @@ public class GameManager : MonoBehaviour
         }
         
     }
-    //---------------------OLD FUNCTIONS-----------------//
-
     public void FillCharacterDetails(CharacterDetails characterDetails, CharacterType characterType)
     {
         Character character = GetCharacter(characterType);
@@ -153,28 +150,6 @@ public class GameManager : MonoBehaviour
 
         return null;
     }
-    public Button GetSelectableButton(List<SelectableCharacter> selectableList, CharacterType characterType)
-    {
-        for (int i = 0; i < selectableList.Count; i++)
-        {
-            if (selectableList.ElementAt(i).characterType == characterType)
-            {
-                //Button button = selectableList.ElementAt(i).GetComponent<Button>();
-                return selectableList.ElementAt(i).GetComponent<Button>();
-            }
-        }
-        return null;
-    }
-    public void AddCharacterFromAll(CharacterType characterType, List<Character> characters)
-    {
-        foreach (Character character in AllCharacters)
-        {
-            if (character.GetCharacterType() == characterType)
-            {
-                characters.Add(character);
-            }
-        }
-    }
     public void DeleteCharacter(CharacterType characterType, List<Character> characters)
     {
         for (int i = 0; i < characters.Count; i++)
@@ -185,21 +160,25 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    public void RemoveFromSelectedSelectable(CharacterType characterType)
-    {
-        for (int i = 0; i < SelectedSelectable.Count; i++)
-        {
-            if (SelectedSelectable.ElementAt(i).GetComponent<SelectableCharacter>().characterType == characterType)
-            {
-                SelectedSelectable.RemoveAt(i);
-            }
-        }
-    }
     public void SetState(int state)
     {
         CurrentState = (State)state;
     }
+    public void InitGame()
+    {
+        Debug.Log($"SelectedMembers count: {SelectedGroupMembers.childCount}");
+        Debug.Log($"SelectedOpponents count: {SelectedOpponents.childCount}");
 
+        while (SelectedGroupMembers.childCount > 0)
+        {
+            SelectedGroupMembers.GetChild(0).SetParent(MainGroup);
+        }
+
+        while (SelectedOpponents.childCount > 0)
+        {
+            SelectedOpponents.GetChild(0).SetParent(MainOpponents);
+        }
+    }
     public void DebugCharacterLists()
     {
         Debug.Log($"All characters: {AllCharacters.Count}");
