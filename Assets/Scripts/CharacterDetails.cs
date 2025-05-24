@@ -19,7 +19,7 @@ public class CharacterDetails : MonoBehaviour
 
     void Start()
     {
-        thisButton?.onClick.AddListener(delegate
+        thisButton?.onClick.AddListener(() =>
         {
             if (!GameManager.GM) return;
             if (GameManager.GM.CurrentState == State.DEFAULT) return;
@@ -28,7 +28,7 @@ public class CharacterDetails : MonoBehaviour
             if (selectableCharacterButton) selectableCharacterButton.interactable = true;
             Destroy(gameObject);
         });
-        LevelUpButton?.onClick.AddListener(delegate
+        LevelUpButton?.onClick.AddListener(() => 
         {
             if (GameManager.GM)
             {
