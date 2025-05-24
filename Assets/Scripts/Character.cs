@@ -69,7 +69,7 @@ public abstract class Character
             level++;
             maxHP = CalculateMaxHP(level, characterType);
             maxMP = CalculateMaxMP(level, characterType);
-        } 
+        }
     }
     public CharacterType GetCharacterType()
     {

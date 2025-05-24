@@ -1783,6 +1783,7 @@ MonoBehaviour:
   Avatar: {fileID: 1047553886673063891}
   LevelUpButton: {fileID: 3146557400230716339}
   characterType: 0
+  selectableCharacterButton: {fileID: 0}
 --- !u!114 &8031340109648096528
 MonoBehaviour:
   m_ObjectHideFlags: 0

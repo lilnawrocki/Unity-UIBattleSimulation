@@ -22,7 +22,6 @@ public class Enemy : Character
             name = "Slime";
             maxHP = Mathf.FloorToInt(level * level * 0.18f + level + 12);
             maxMP = level * 3 + 8;
-            //=A2*A2*0,18+A2+12
         }
 
         currentHP = maxHP;

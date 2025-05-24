@@ -5,34 +5,27 @@ using System.Linq;
 
 public class CharacterDetails : MonoBehaviour
 {
+    [Header("UI Elements")]
     public TMP_Text ClassNameTMP, LevelTMP, HPTMP, MAXHPTMP, MPTMP, MAXMPTMP;
     public Image Avatar;
     public Button LevelUpButton;
     public CharacterType characterType;
-    Button button;
-
+    public Button selectableCharacterButton;
+    Button thisButton;
     void Awake()
     {
-        button = GetComponent<Button>();
+        thisButton = GetComponent<Button>();
     }
 
     void Start()
     {
-        button?.onClick.AddListener(delegate
+        thisButton?.onClick.AddListener(delegate
         {
             if (!GameManager.GM) return;
+            if (GameManager.GM.CurrentState == State.DEFAULT) return;
             
             GameManager.GM.DeleteCharacter(characterType);
-            Button selectedButton = GameManager.GM.GetButton(GameManager.GM.SelectedSelectable, characterType);
-            if (selectedButton == null) return;
-            selectedButton.interactable = true;
-            GameManager.GM.RemoveFromSelectedSelectable(characterType);
-
-            if (GameManager.GM.CurrentState == State.GROUP_SELECTION)
-                GameManager.GM.DeleteCharacter(characterType, GameManager.GM.PartyCharacters);
-            if (GameManager.GM.CurrentState == State.OPPONENT_SELECTION)
-                GameManager.GM.DeleteCharacter(characterType, GameManager.GM.OpponentCharacters);
-            
+            if (selectableCharacterButton) selectableCharacterButton.interactable = true;
             Destroy(gameObject);
         });
         LevelUpButton?.onClick.AddListener(delegate

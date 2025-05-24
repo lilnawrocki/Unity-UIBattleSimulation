@@ -6,18 +6,16 @@ using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager GM = null;
+    public static GameManager GM;
     public State CurrentState = 0;
-    public GameObject CurrentSelected = null;
-    public GameObject CharacterDetailsPanelPrefab = null;
-    public GameObject AvailableCharactersPartyPanel = null;
-    public GameObject AvailableCharactersOpponentsPanel = null;
-    public Transform SelectedPartyParent = null;
-
+    public GameObject CurrentSelected;
+    public GameObject CharacterDetailsPanelPrefab;
+    public Transform SelectedGroupMembers, SelectedOpponents;
+    public Transform MainGroup, MainOpponents;
     public List<Character> AllCharacters = new List<Character>();
     public List<Character> PartyCharacters = new List<Character>();
     public List<Character> OpponentCharacters = new List<Character>();
-    public List<Button> SelectedSelectable = new List<Button>();
+    public List<SelectableCharacter> SelectedSelectable = new List<SelectableCharacter>();
     void Awake()
     {
         GM = this;
@@ -26,7 +24,6 @@ public class GameManager : MonoBehaviour
     {
         CurrentSelected = EventSystem.current.currentSelectedGameObject;
     }
-
     public Character CreateCharacter(CharacterType characterType)
     {
         Character character;
@@ -40,39 +37,80 @@ public class GameManager : MonoBehaviour
         {
             character = new Enemy(1, characterType);
         }
-        AllCharacters.Add(character);
         return character;
     }
-    public Character CreateCharacter(CharacterType characterType, List<Character> characterList)
+    public GameObject CreateCharacterPanel()
     {
-        Character character;
-        if (characterType == CharacterType.SWORDSMAN ||
-        characterType == CharacterType.MAGE ||
-        characterType == CharacterType.BACKEND_ENGINEER)
+        if (!CharacterDetailsPanelPrefab || !SelectedGroupMembers || !SelectedOpponents) return null;
+
+        if (CurrentState == State.GROUP_SELECTION)
         {
-            character = new Player(1, characterType);
-        }
-        else
-        {
-            character = new Enemy(1, characterType);
-        }
-        characterList.Add(character);
-        return character;
-    }
-    public void InstantiateCharacterPanel(CharacterType characterType, GameObject panelPrefab, Transform parent)
-    {
-        GameObject characterDetailsPanelObject;
-        if (panelPrefab && parent)
-        {
-            if (parent.childCount < 3)
+            if (SelectedGroupMembers.childCount < 3)
             {
-                characterDetailsPanelObject = Instantiate(panelPrefab, parent);
-                CharacterDetails characterDetails = characterDetailsPanelObject.GetComponent<CharacterDetails>();
-                FillCharacterDetails(characterDetails, characterType);
+                return Instantiate(CharacterDetailsPanelPrefab, SelectedGroupMembers);
+            }
+        }
+        if (CurrentState == State.OPPONENT_SELECTION)
+        {
+            if (SelectedOpponents.childCount < 3)
+            {
+                return Instantiate(CharacterDetailsPanelPrefab, SelectedOpponents);
             }
 
         }
+        return null;
     }
+    public void AddCharacterToLists(Character character)
+    {
+        
+        if (CurrentState == State.GROUP_SELECTION)
+        {
+            if (!PartyCharacters.Contains(character))
+                PartyCharacters.Add(character);
+        }
+        else if (CurrentState == State.OPPONENT_SELECTION)
+        {
+            if (!OpponentCharacters.Contains(character))
+                OpponentCharacters.Add(character);
+        }
+        
+        if (!AllCharacters.Contains(character))
+            AllCharacters.Add(character);
+        
+    }
+    public void DeleteCharacter(CharacterType characterType)
+    {
+        for (int i = 0; i < AllCharacters.Count; i++)
+        {
+            if (AllCharacters.ElementAt(i).GetCharacterType() == characterType)
+            {
+                AllCharacters.RemoveAt(i);
+            }
+        }
+        
+        if (CurrentState == State.GROUP_SELECTION)
+        {
+            for (int i = 0; i < PartyCharacters.Count; i++)
+            {
+                if (PartyCharacters.ElementAt(i).GetCharacterType() == characterType)
+                {
+                    PartyCharacters.RemoveAt(i);
+                }
+            }
+        }
+        if (CurrentState == State.OPPONENT_SELECTION)
+        {
+            for (int i = 0; i < OpponentCharacters.Count; i++)
+            {
+                if (OpponentCharacters.ElementAt(i).GetCharacterType() == characterType)
+                {
+                    OpponentCharacters.RemoveAt(i);
+                }
+            }
+        }
+        
+    }
+    //---------------------OLD FUNCTIONS-----------------//
 
     public void FillCharacterDetails(CharacterDetails characterDetails, CharacterType characterType)
     {
@@ -84,11 +122,18 @@ public class GameManager : MonoBehaviour
         if (characterDetails.MAXHPTMP) characterDetails.MAXHPTMP.text = character?.GetMaxHP().ToString();
         if (characterDetails.MPTMP) characterDetails.MPTMP.text = character?.GetCurrentMP().ToString();
         if (characterDetails.MAXMPTMP) characterDetails.MAXMPTMP.text = character?.GetMaxMP().ToString();
-        if (characterDetails.Avatar)
-        {
-            if (characterDetails.Avatar.sprite == null)
-                characterDetails.Avatar.sprite = CurrentSelected?.GetComponent<Image>().sprite;
-        }
+        characterDetails.characterType = character.GetCharacterType();
+    }
+
+    public void FillCharacterDetails(CharacterDetails characterDetails, Character character)
+    {
+        if (!characterDetails) return;
+        if (characterDetails.ClassNameTMP) characterDetails.ClassNameTMP.text = character.GetName();
+        if (characterDetails.LevelTMP) characterDetails.LevelTMP.text = character.GetLevel().ToString();
+        if (characterDetails.HPTMP) characterDetails.HPTMP.text = character.GetCurrentHP().ToString();
+        if (characterDetails.MAXHPTMP) characterDetails.MAXHPTMP.text = character.GetMaxHP().ToString();
+        if (characterDetails.MPTMP) characterDetails.MPTMP.text = character.GetCurrentMP().ToString();
+        if (characterDetails.MAXMPTMP) characterDetails.MAXMPTMP.text = character.GetMaxMP().ToString();
         characterDetails.characterType = character.GetCharacterType();
     }
     public void LevelUp(Character character)
@@ -96,7 +141,8 @@ public class GameManager : MonoBehaviour
         character.LevelUp();
     }
     public Character GetCharacter(CharacterType characterType)
-    {
+    {   
+
         foreach (Character character in AllCharacters)
         {
             if (character.GetCharacterType() == characterType)
@@ -107,30 +153,17 @@ public class GameManager : MonoBehaviour
 
         return null;
     }
-    public Button GetButton(List<Button> buttonList, CharacterType characterType)
+    public Button GetSelectableButton(List<SelectableCharacter> selectableList, CharacterType characterType)
     {
-        for (int i = 0; i < buttonList.Count; i++)
+        for (int i = 0; i < selectableList.Count; i++)
         {
-            if (buttonList.ElementAt(i).GetComponent<SelectableCharacter>().characterType == characterType)
+            if (selectableList.ElementAt(i).characterType == characterType)
             {
-                return buttonList.ElementAt(i);
+                //Button button = selectableList.ElementAt(i).GetComponent<Button>();
+                return selectableList.ElementAt(i).GetComponent<Button>();
             }
         }
         return null;
-    }
-    public void DeleteCharacter(int index)
-    {
-        AllCharacters.RemoveAt(index);
-    }
-    public void DeleteCharacter(CharacterType characterType)
-    {
-        for (int i = 0; i < AllCharacters.Count; i++)
-        {
-            if (AllCharacters.ElementAt(i).GetCharacterType() == characterType)
-            {
-                AllCharacters.RemoveAt(i);
-            }
-        }
     }
     public void AddCharacterFromAll(CharacterType characterType, List<Character> characters)
     {
@@ -165,5 +198,12 @@ public class GameManager : MonoBehaviour
     public void SetState(int state)
     {
         CurrentState = (State)state;
+    }
+
+    public void DebugCharacterLists()
+    {
+        Debug.Log($"All characters: {AllCharacters.Count}");
+        Debug.Log($"Party characters: {PartyCharacters.Count}");
+        Debug.Log($"Opponent characters: {OpponentCharacters.Count}");
     }
 }

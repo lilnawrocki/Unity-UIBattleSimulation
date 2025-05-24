@@ -7,42 +7,42 @@ public class SelectableCharacter : MonoBehaviour
 {
     public CharacterType characterType;
     public Transform parent;
-    Button button;
+    Button thisButton;
+    Image thisImage;
     void Awake()
     {
-        button = GetComponent<Button>();
-
+        thisButton = GetComponent<Button>();
+        thisImage = GetComponent<Image>();
     }
     void Start()
     {
-        button?.onClick.AddListener(delegate
+        thisButton?.onClick.AddListener(() =>
         {
-            if (!GameManager.GM || !parent) return;
-
-            if (parent.childCount < 3)
+            if (!GameManager.GM) return;
+            Character newCharacter = GameManager.GM.CreateCharacter(characterType);
+            GameObject characterPanel = GameManager.GM.CreateCharacterPanel();
+            if (characterPanel)
             {
-                GameManager.GM.CreateCharacter(characterType);
-                GameManager.GM.InstantiateCharacterPanel(characterType, GameManager.GM.CharacterDetailsPanelPrefab, parent);
-                GameManager.GM.SelectedSelectable.Add(button);
-                if (button) button.interactable = false;
-                if (GameManager.GM.CurrentState == State.GROUP_SELECTION)
-                    GameManager.GM.AddCharacterFromAll(characterType, GameManager.GM.PartyCharacters);
-                if (GameManager.GM.CurrentState == State.OPPONENT_SELECTION)
-                    GameManager.GM.AddCharacterFromAll(characterType, GameManager.GM.OpponentCharacters);
-            }
+                CharacterDetails characterDetails = characterPanel.GetComponent<CharacterDetails>();
+                GameManager.GM.FillCharacterDetails(characterDetails, newCharacter);
+                characterDetails.selectableCharacterButton = thisButton;
+                characterDetails.Avatar.sprite = thisImage.sprite;
+                if (thisButton) thisButton.interactable = false;
+                GameManager.GM.AddCharacterToLists(newCharacter);
+            }      
+            
         });
     }
-
     void OnEnable()
     {
-        if (button) button.interactable = true;
-        if (!GameManager.GM) return;
+        if (thisButton) thisButton.interactable = true;
         foreach (Character character in GameManager.GM.AllCharacters)
         {
             if (character.GetCharacterType() == characterType)
             {
-                if (button) button.interactable = false;
-            }       
+               if (thisButton) thisButton.interactable = false;
+            }
         }
+        
     }
 }
