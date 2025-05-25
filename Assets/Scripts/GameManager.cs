@@ -156,16 +156,4 @@ public class GameManager : MonoBehaviour
             SelectedOpponents.GetChild(0).SetParent(MainOpponents);
         }
     }
-    public void Restart()
-    {
-        AllCharacters.Clear();
-        while (MainGroup.childCount > 0)
-        {
-            Destroy(MainGroup.GetChild(0).gameObject);
-        }
-        while (MainOpponents.childCount > 0)
-        {
-            Destroy(MainOpponents.GetChild(0).gameObject);
-        }
-    }
 }
