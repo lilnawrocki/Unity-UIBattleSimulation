@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 public abstract class Character
 {
     protected string name;
@@ -22,7 +20,6 @@ public abstract class Character
     }
 
     public abstract int ExpToNextLevel();
-    //public abstract void ApplyDamage(Character attacker);
     public abstract void Heal(Character healer);
 
     public abstract int CalculateMaxHP(int level, CharacterType characterType);
