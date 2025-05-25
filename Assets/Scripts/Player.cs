@@ -9,6 +9,7 @@ public class Player : Character
             name = "Swordsman";
             maxHP = Mathf.FloorToInt(level * level * 0.75f + 52);
             maxMP = level * 7 + 11;
+            damage = Mathf.FloorToInt(level * 3 + 0.4f);
 
         }
         if (characterType == CharacterType.MAGE)
@@ -16,6 +17,7 @@ public class Player : Character
             name = "Mage";
             maxHP = Mathf.FloorToInt(level * level * 0.5f + level + 31.5f);
             maxMP = level * 15 + 32;
+            damage = Mathf.FloorToInt(level * 2.1f + 0.8f);
 
         }
         if (characterType == CharacterType.BACKEND_ENGINEER)
@@ -23,6 +25,7 @@ public class Player : Character
             name = "Backend Engineer";
             maxHP = Mathf.FloorToInt(level * level * 0.95f + level + 36);
             maxMP = level * 12 + 24;
+            damage = Mathf.FloorToInt(level * 3.5f + 1);
 
         }
 
@@ -66,13 +69,30 @@ public class Player : Character
         }
         return maxMP;
     }
+    public override int CalculateDamage(int level, CharacterType characterType)
+    {
+        int damage = 0;
+        if (characterType == CharacterType.SWORDSMAN)
+        {
+            damage = Mathf.FloorToInt(level * 3 + 0.4f);
+        }
+        if (characterType == CharacterType.MAGE)
+        {
+            damage = Mathf.FloorToInt(level * 2.1f + 0.8f);
+        }
+        if (characterType == CharacterType.BACKEND_ENGINEER)
+        {
+            damage = Mathf.FloorToInt(level * 3.5f + 1);
+        }
+        return damage;
+    }
+
     public override int ExpToNextLevel()
     {
         throw new System.NotImplementedException();
     }
-
-    public override void ApplyDamage()
+    public override void Heal(Character healer)
     {
-        throw new System.NotImplementedException();
+        
     }
 }

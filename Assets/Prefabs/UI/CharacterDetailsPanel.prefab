@@ -1782,6 +1782,8 @@ MonoBehaviour:
   MAXMPTMP: {fileID: 5109832445078013717}
   Avatar: {fileID: 1047553886673063891}
   LevelUpButton: {fileID: 3146557400230716339}
+  AttackButton: {fileID: 4875931514728135062}
+  HealButton: {fileID: 6044886974871933003}
   characterType: 0
   selectableCharacterButton: {fileID: 0}
 --- !u!114 &8031340109648096528

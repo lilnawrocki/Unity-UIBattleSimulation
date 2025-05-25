@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 public abstract class Character
 {
     protected string name;
@@ -6,6 +8,8 @@ public abstract class Character
     protected int currentMP;
     protected int maxMP;
     protected int level;
+    protected int damage;
+    protected int defense;
     protected int currentExp = 0;
     protected int expToNextLevel;
 
@@ -18,10 +22,12 @@ public abstract class Character
     }
 
     public abstract int ExpToNextLevel();
-    public abstract void ApplyDamage();
+    //public abstract void ApplyDamage(Character attacker);
+    public abstract void Heal(Character healer);
 
     public abstract int CalculateMaxHP(int level, CharacterType characterType);
     public abstract int CalculateMaxMP(int level, CharacterType characterType);
+    public abstract int CalculateDamage(int level, CharacterType characterType);
 
     public int GetMaxHP()
     {
@@ -62,6 +68,10 @@ public abstract class Character
     {
         return currentMP;
     }
+    public int GetDamage()
+    {
+        return damage;
+    }
     public void LevelUp()
     {
         if (level < 99)
@@ -70,6 +80,23 @@ public abstract class Character
             maxHP = CalculateMaxHP(level, characterType);
             maxMP = CalculateMaxMP(level, characterType);
         }
+    }
+
+    public void ApplyDamage(Character target)
+    {
+        damage = CalculateDamage(level, characterType);
+        
+        if (target.GetCurrentHP() - damage > 0)
+        {
+            int targetHP = target.GetCurrentHP() - damage;
+            target.SetCurrentHP(targetHP);
+        }
+        else
+        {
+            target.SetCurrentHP(0);
+        }
+        
+        
     }
     public CharacterType GetCharacterType()
     {

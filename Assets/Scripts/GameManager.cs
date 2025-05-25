@@ -8,20 +8,25 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager GM;
     public State CurrentState = 0;
-    public GameObject CurrentSelected;
+    public Action CurrentAction = 0;
+    public Button CurrentSelected;
     public GameObject CharacterDetailsPanelPrefab;
     public Transform SelectedGroupMembers, SelectedOpponents;
     public Transform MainGroup, MainOpponents;
     public List<Character> AllCharacters = new List<Character>();
     public List<Character> PartyCharacters = new List<Character>();
     public List<Character> OpponentCharacters = new List<Character>();
+    public Character Target;
+    public Character Attacker;
+    public CharacterType attacker;
+    public CharacterType target;
     void Awake()
     {
         GM = this;
     }
-    public void GetSelectedButton()
+    public void SetCurrentSelectedButton(Button button)
     {
-        CurrentSelected = EventSystem.current.currentSelectedGameObject;
+        CurrentSelected = button;
     }
     public Character CreateCharacter(CharacterType characterType)
     {
@@ -137,8 +142,16 @@ public class GameManager : MonoBehaviour
     {
         character.LevelUp();
     }
+    public void ApplyDamage(Character thisCharacter, Character attacker)
+    {
+        thisCharacter.ApplyDamage(attacker);
+    }
+    public void ApplyDamage(Character character)
+    {
+        character.ApplyDamage(character);
+    }
     public Character GetCharacter(CharacterType characterType)
-    {   
+    {
 
         foreach (Character character in AllCharacters)
         {
@@ -160,15 +173,17 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public Character SetTarget(Character character)
+    {
+        Target = character;
+        return Target;
+    }
     public void SetState(int state)
     {
         CurrentState = (State)state;
     }
     public void InitGame()
     {
-        Debug.Log($"SelectedMembers count: {SelectedGroupMembers.childCount}");
-        Debug.Log($"SelectedOpponents count: {SelectedOpponents.childCount}");
-
         while (SelectedGroupMembers.childCount > 0)
         {
             SelectedGroupMembers.GetChild(0).SetParent(MainGroup);
@@ -178,11 +193,5 @@ public class GameManager : MonoBehaviour
         {
             SelectedOpponents.GetChild(0).SetParent(MainOpponents);
         }
-    }
-    public void DebugCharacterLists()
-    {
-        Debug.Log($"All characters: {AllCharacters.Count}");
-        Debug.Log($"Party characters: {PartyCharacters.Count}");
-        Debug.Log($"Opponent characters: {OpponentCharacters.Count}");
     }
 }
