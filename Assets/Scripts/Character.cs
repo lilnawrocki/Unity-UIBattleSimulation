@@ -7,10 +7,8 @@ public abstract class Character
     protected int maxMP;
     protected int level;
     protected int damage;
-    protected int defense;
-    protected int currentExp = 0;
-    protected int expToNextLevel;
-
+    protected int healAmount;
+    protected int MPcost;
     protected CharacterType characterType;
 
     public Character(int level, CharacterType characterType)
@@ -18,13 +16,11 @@ public abstract class Character
         this.level = level;
         this.characterType = characterType;
     }
-
-    public abstract int ExpToNextLevel();
-    public abstract void Heal(Character healer);
-
     public abstract int CalculateMaxHP(int level, CharacterType characterType);
     public abstract int CalculateMaxMP(int level, CharacterType characterType);
     public abstract int CalculateDamage(int level, CharacterType characterType);
+    public abstract int CalculateHealAmount(int level, CharacterType characterType);
+    public abstract int CalculateMPCost(int level);
 
     public int GetMaxHP()
     {
@@ -91,8 +87,30 @@ public abstract class Character
         else
         {
             target.SetCurrentHP(0);
+        }    
+    }
+    public virtual void Heal(Character target)
+    {
+        healAmount = CalculateHealAmount(level, characterType);
+        MPcost = CalculateMPCost(level);
+        if (currentMP - MPcost >= 0)
+        {
+            if (target.GetCurrentHP() + healAmount < target.GetMaxHP())
+            {
+                int targetNewHP = target.GetCurrentHP() + healAmount;
+                target.SetCurrentHP(targetNewHP);
+            }
+            else
+            {
+                target.SetCurrentHP(target.GetMaxHP());
+                
+            }
+            currentMP -= MPcost;
         }
-        
+        else
+        {
+            return;
+        }
         
     }
     public CharacterType GetCharacterType()

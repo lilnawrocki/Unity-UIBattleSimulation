@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Enemy : Character
 {
-    int rewardExp;
     public Enemy(int level, CharacterType characterType) : base(level, characterType)
     {
         if (characterType == CharacterType.PINK_BEAN)
@@ -11,6 +10,7 @@ public class Enemy : Character
             maxHP = Mathf.FloorToInt(level * level * 0.75f + level + 120);
             maxMP = level * 30 + 24;
             damage = Mathf.FloorToInt(level * 5 + 1.8f);
+            healAmount = level * 5 + 7;
         }
         if (characterType == CharacterType.HORNY_MUSHROOM)
         {
@@ -18,6 +18,7 @@ public class Enemy : Character
             maxHP = Mathf.FloorToInt(level * level * 0.23f + level + 35);
             maxMP = level * 8 + 4;
             damage = Mathf.FloorToInt(level * 1.25f + 5);
+            healAmount = level * 2 + 1;
         }
         if (characterType == CharacterType.SLIME)
         {
@@ -25,10 +26,12 @@ public class Enemy : Character
             maxHP = Mathf.FloorToInt(level * level * 0.18f + level + 12);
             maxMP = level * 3 + 8;
             damage = Mathf.FloorToInt(level * 0.75f + 4.5f);
+            healAmount = level * 2 + 6;
         }
 
         currentHP = maxHP;
         currentMP = maxMP;
+        MPcost = Mathf.FloorToInt(level * 0.25f + 4);
     }
 
     public override int CalculateMaxHP(int level, CharacterType characterType)
@@ -66,10 +69,6 @@ public class Enemy : Character
         }
         return maxMP;
     }
-    public override int ExpToNextLevel()
-    {
-        throw new System.NotImplementedException();
-    }
     public override int CalculateDamage(int level, CharacterType characterType)
     {
         int damage = 0;
@@ -88,13 +87,26 @@ public class Enemy : Character
         return damage;
     }
 
-    public override void Heal(Character healer)
+    public override int CalculateHealAmount(int level, CharacterType characterType)
     {
-
+        int healAmount = 0;
+        if (characterType == CharacterType.PINK_BEAN)
+        {
+            healAmount = level * 5 + 7;
+        }
+        if (characterType == CharacterType.HORNY_MUSHROOM)
+        {
+            healAmount = level * 2 + 1;
+        }
+        if (characterType == CharacterType.SLIME)
+        {
+            healAmount = level * 2 + 6;
+        }
+        return healAmount;
     }
 
-    public int RewardExp(int level)
+    public override int CalculateMPCost(int level)
     {
-        return 0;
-    } 
+        return Mathf.FloorToInt(level * 0.25f + 4);
+    }
 }

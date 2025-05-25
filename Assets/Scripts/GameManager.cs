@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using System.Linq;
 
 public class GameManager : MonoBehaviour
@@ -18,8 +17,8 @@ public class GameManager : MonoBehaviour
     public List<Character> OpponentCharacters = new List<Character>();
     public Character Target;
     public Character Attacker;
-    public CharacterType attacker;
-    public CharacterType target;
+    public Button SelectedAttackButton, SelectedHealButton;
+    public CharacterDetails SelectedCharacterDetails;
     void Awake()
     {
         GM = this;
@@ -49,14 +48,14 @@ public class GameManager : MonoBehaviour
 
         if (CurrentState == State.GROUP_SELECTION)
         {
-            if (SelectedGroupMembers.childCount < 3)
+            if (SelectedGroupMembers.childCount < 3 && PartyCharacters.Count < 3)
             {
                 return Instantiate(CharacterDetailsPanelPrefab, SelectedGroupMembers);
             }
         }
         if (CurrentState == State.OPPONENT_SELECTION)
         {
-            if (SelectedOpponents.childCount < 3)
+            if (SelectedOpponents.childCount < 3 && OpponentCharacters.Count < 3)
             {
                 return Instantiate(CharacterDetailsPanelPrefab, SelectedOpponents);
             }
@@ -66,7 +65,7 @@ public class GameManager : MonoBehaviour
     }
     public void AddCharacterToLists(Character character)
     {
-        
+
         if (CurrentState == State.GROUP_SELECTION)
         {
             if (!PartyCharacters.Contains(character))
@@ -77,10 +76,10 @@ public class GameManager : MonoBehaviour
             if (!OpponentCharacters.Contains(character))
                 OpponentCharacters.Add(character);
         }
-        
+
         if (!AllCharacters.Contains(character))
             AllCharacters.Add(character);
-        
+
     }
     public void DeleteCharacter(CharacterType characterType)
     {
@@ -91,7 +90,7 @@ public class GameManager : MonoBehaviour
                 AllCharacters.RemoveAt(i);
             }
         }
-        
+
         if (CurrentState == State.GROUP_SELECTION)
         {
             for (int i = 0; i < PartyCharacters.Count; i++)
@@ -112,21 +111,8 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
-    }
-    public void FillCharacterDetails(CharacterDetails characterDetails, CharacterType characterType)
-    {
-        Character character = GetCharacter(characterType);
-        if (character == null) return;
-        if (characterDetails.ClassNameTMP) characterDetails.ClassNameTMP.text = character?.GetName();
-        if (characterDetails.LevelTMP) characterDetails.LevelTMP.text = character?.GetLevel().ToString();
-        if (characterDetails.HPTMP) characterDetails.HPTMP.text = character?.GetCurrentHP().ToString();
-        if (characterDetails.MAXHPTMP) characterDetails.MAXHPTMP.text = character?.GetMaxHP().ToString();
-        if (characterDetails.MPTMP) characterDetails.MPTMP.text = character?.GetCurrentMP().ToString();
-        if (characterDetails.MAXMPTMP) characterDetails.MAXMPTMP.text = character?.GetMaxMP().ToString();
-        characterDetails.characterType = character.GetCharacterType();
-    }
 
+    }
     public void FillCharacterDetails(CharacterDetails characterDetails, Character character)
     {
         if (!characterDetails) return;
@@ -142,17 +128,8 @@ public class GameManager : MonoBehaviour
     {
         character.LevelUp();
     }
-    public void ApplyDamage(Character thisCharacter, Character attacker)
-    {
-        thisCharacter.ApplyDamage(attacker);
-    }
-    public void ApplyDamage(Character character)
-    {
-        character.ApplyDamage(character);
-    }
     public Character GetCharacter(CharacterType characterType)
     {
-
         foreach (Character character in AllCharacters)
         {
             if (character.GetCharacterType() == characterType)
@@ -162,21 +139,6 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
-    }
-    public void DeleteCharacter(CharacterType characterType, List<Character> characters)
-    {
-        for (int i = 0; i < characters.Count; i++)
-        {
-            if (characters.ElementAt(i).GetCharacterType() == characterType)
-            {
-                characters.RemoveAt(i);
-            }
-        }
-    }
-    public Character SetTarget(Character character)
-    {
-        Target = character;
-        return Target;
     }
     public void SetState(int state)
     {
@@ -192,6 +154,18 @@ public class GameManager : MonoBehaviour
         while (SelectedOpponents.childCount > 0)
         {
             SelectedOpponents.GetChild(0).SetParent(MainOpponents);
+        }
+    }
+    public void Restart()
+    {
+        AllCharacters.Clear();
+        while (MainGroup.childCount > 0)
+        {
+            Destroy(MainGroup.GetChild(0).gameObject);
+        }
+        while (MainOpponents.childCount > 0)
+        {
+            Destroy(MainOpponents.GetChild(0).gameObject);
         }
     }
 }
