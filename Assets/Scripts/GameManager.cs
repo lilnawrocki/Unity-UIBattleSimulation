@@ -146,6 +146,9 @@ public class GameManager : MonoBehaviour
     }
     public void InitGame()
     {
+        if (!SelectedGroupMembers || !SelectedOpponents ||
+        !MainGroup || !MainOpponents) return;
+
         while (SelectedGroupMembers.childCount > 0)
         {
             SelectedGroupMembers.GetChild(0).SetParent(MainGroup);
@@ -155,5 +158,21 @@ public class GameManager : MonoBehaviour
         {
             SelectedOpponents.GetChild(0).SetParent(MainOpponents);
         }
+    }
+    public void Reset()
+    {
+        if (!MainGroup || !MainOpponents) return;
+        for (int i = 0; i < MainGroup.childCount; i++)
+        {
+            Destroy(MainGroup.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < MainOpponents.childCount; i++)
+        {
+            Destroy(MainOpponents.GetChild(i).gameObject);
+        }
+        AllCharacters.Clear();
+        OpponentCharacters.Clear();
+        PartyCharacters.Clear();
+
     }
 }
