@@ -1,5 +1,6 @@
 ## Description
 [itch.io - UI Battle Simulation](https://lilnawrocki.itch.io/ui-battle-simulation)
+
 Password: SmartBear
 
 A UI battle simulation created in Unity using C#, where players can assemble custom teams and engage in turn-based actions like attacking and healing. This project demonstrates core object-oriented programming (OOP) concepts using an interactive UI.
