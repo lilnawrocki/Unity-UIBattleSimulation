@@ -28,4 +28,4 @@ This project was developed to:
 
 ## Inspiration
 Player character design is inspired by Suikoden II (classic Japanese RPG).
-Enemy design draws from MapleStory (Korean MMORPG), adding nostalgic flair and humor.
+Enemy design draws from MapleStory (Korean MMORPG).
